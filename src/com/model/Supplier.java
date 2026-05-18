@@ -2,7 +2,7 @@
 package com.model;
 
 	public class Supplier {
-		private String supplierId;
+		
 	    private String name;
 	    private String contactPerson;
 	    private String email;
@@ -16,14 +16,6 @@ package com.model;
 	    	this.email=email;
 	    	this.phone=phone;
 	    }
-
-		public String getSupplierId() {
-			return supplierId;
-		}
-
-		public void setSupplierId(String supplierId) {
-			this.supplierId = supplierId;
-		}
 
 		public String getName() {
 			return name;
