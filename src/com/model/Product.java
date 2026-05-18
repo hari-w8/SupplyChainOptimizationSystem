@@ -59,7 +59,7 @@ public class Product{
 	    }
 
 	    public void setCategory(String category) {
-	    	System.out.println("hii");
+	    	System.out.println("hiii");
 	        this.category = category;
 	    }
 
