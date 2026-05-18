@@ -59,6 +59,7 @@ public class Product{
 	    }
 
 	    public void setCategory(String category) {
+	    	System.out.println("hi");
 	        this.category = category;
 	    }
 
@@ -68,5 +69,6 @@ public class Product{
 
 	    public void setSupplierId(String supplierId) {
 	        this.supplierId = supplierId;
+	        
 	    }
 }
