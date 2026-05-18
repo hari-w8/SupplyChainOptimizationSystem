@@ -8,7 +8,7 @@ package com.model;
 	    private String email;
 	    private String phone;
 	    
-	    public Supplier(String supplierId,String name,String conatctPerson,String email,String phone)
+	    public Supplier(String supplierId,String name,String contactPerson,String email,String phone)
 	    {
 	    	this.supplierId=supplierId;
 	    	this.name=name;
