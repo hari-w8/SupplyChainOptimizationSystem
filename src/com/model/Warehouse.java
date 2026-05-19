@@ -35,7 +35,6 @@ public class Warehouse{
 	public String getStatus() {
 		return status;
 	}
-
 	//setter
 	public void setWarehouseId(String warehouseId) {
 		this.warehouseId=warehouseId;
