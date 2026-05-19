@@ -24,7 +24,8 @@ public class InventoryService {
                 inventoryManagement
                         .getInventoryByProductId(productId);
 
-        if (existing != null) {
+        if (existing != null) 
+        {
 
             // Update Existing Stock
             int newQty =
@@ -71,7 +72,8 @@ public class InventoryService {
 
         Inventory inv = inventoryManagement.getInventoryByProductId(productId);
 
-        if (inv == null) {
+        if (inv == null) 
+        {
 
             throw new SupplyChainException("No inventory record for product : "+ productId);
         }
@@ -80,7 +82,8 @@ public class InventoryService {
     }
 
     public List<Inventory> getAllInventory()
-            throws SupplyChainException {
+            throws SupplyChainException 
+    {
 
         return inventoryManagement
                 .getAllInventory();
