@@ -1,6 +1,5 @@
 
 package com.model;
-
 	public class Supplier {
 		private String supplierId;
 		private String name;
@@ -54,5 +53,6 @@ package com.model;
 
 		public void setPhone(String phone) {
 			this.phone = phone;
+
 		}
 	}
