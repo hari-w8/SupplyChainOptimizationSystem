@@ -1,10 +1,9 @@
 package com.client;
 
-public class UserInterface {
-
-
-	public static void main(String[] args) {
-		System.out.println("hihelloooooo  userInterface hemaaa");
-
+public class UserInterface 
+{
+public static void main(String[] args) 
+{
+	System.out.println("hihelloooooo hemaaa");
 }
 }
