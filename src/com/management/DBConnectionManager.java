@@ -1,81 +1,47 @@
-//package com.management;
-//
-//import java.io.FileInputStream;
-//import java.io.IOException;
-//import java.sql.Connection;
-//import java.sql.DriverManager;
-//import java.sql.SQLException;
-//import java.util.Properties;
-//
-//public class DBConnectionManager {
-//
-//    public static Connection getConnection() {
-//        Connection connection = null;
-//
-//        try {
-//            Properties properties = new Properties();
-//
-//            FileInputStream file = new FileInputStream("database.properties");
-//            properties.load(file);
-//
-//            String url = properties.getProperty("db.url");
-//            String username = properties.getProperty("db.username");
-//            String password = properties.getProperty("db.password");
-//            String driver = properties.getProperty("db.driver");
-//
-//            Class.forName(driver);
-//
-//            connection = DriverManager.getConnection(url, username, password);
-//
-//            System.out.println("Database Connected Successfully!");
-//
-//        } catch (IOException e) {
-//            System.out.println("database.properties file not found!");
-//            e.printStackTrace();
-//
-//        } catch (ClassNotFoundException e) {
-//            System.out.println("MySQL JDBC Driver not found!");
-//            e.printStackTrace();
-//
-//        } catch (SQLException e) {
-//            System.out.println("Database Connection Failed!");
-//            e.printStackTrace();
-//        }
-//
-//        return connection;
-//    }
-//}
 package com.management;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
-public class DBConnectionManager
-{
+public class DBConnectionManager {
 
-    static Connection con;
+    public static Connection getConnection() {
+        Connection connection = null;
 
-    public static Connection getConnection()
-    {
+        try {
+            Properties properties = new Properties();
 
-        try
-        {
+            FileInputStream file = new FileInputStream("database.properties");
+            properties.load(file);
 
-            Class.forName(
-                    "com.mysql.jdbc.Driver");
+            String url = properties.getProperty("db.url");
+            String username = properties.getProperty("db.username");
+            String password = properties.getProperty("db.password");
+            String driver = properties.getProperty("db.driver");
 
-            con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/supplychain_db",
-                    "root",
-                    ""
-            );
+            Class.forName(driver);
 
-        }
-        catch(Exception e)
-        {
+            connection = DriverManager.getConnection(url, username, password);
+
+            System.out.println("Database Connected Successfully!");
+
+        } catch (IOException e) {
+            System.out.println("database.properties file not found!");
+            e.printStackTrace();
+
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found!");
+            e.printStackTrace();
+
+        } catch (SQLException e) {
+            System.out.println("Database Connection Failed!");
             e.printStackTrace();
         }
 
-        return con;
+        return connection;
     }
 }
