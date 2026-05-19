@@ -1,5 +1,5 @@
 package com.model;
-	import java.time.LocalDate;
+import java.time.LocalDate;
 
 	public class Product {
 
@@ -123,3 +123,4 @@ package com.model;
 	                "Warranty : " + warranty;
 	    }
 	}
+	 
