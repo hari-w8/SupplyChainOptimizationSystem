@@ -40,6 +40,9 @@ public class Warehouse{
 	public String getCreatedDate() {
 		return createdDate;
 	}
+	public String getLastUpdated() {
+		return lastUpdated;
+	}
 	//setter
 	public void setWarehouseId(String warehouseId) {
 		this.warehouseId=warehouseId;
