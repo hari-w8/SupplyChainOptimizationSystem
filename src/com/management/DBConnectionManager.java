@@ -15,7 +15,7 @@ public class DBConnectionManager {
         try {
             Properties properties = new Properties();
 
-            FileInputStream file = new FileInputStream("database.properties");
+            FileInputStream file = new FileInputStream("src/database.properties");
             properties.load(file);
 
             String url = properties.getProperty("db.url");
