@@ -1,25 +1,40 @@
 package com.model;
-public class Product{
+	import java.time.LocalDate;
+
+	public class Product {
+
 	    private String productId;
-	    private String name;
+	    private String productName;
 	    private String description;
-	    private double unitPrice;
+	    private double price;
 	    private String category;
 	    private String supplierId;
+	    private int quantity;
+	    private LocalDate expiryDate;
+	    private String warranty;
+
+	    public Product() {
+	    }
 
 	    public Product(String productId,
-	                   String name,
+	                   String productName,
 	                   String description,
-	                   double unitPrice,
+	                   double price,
 	                   String category,
-	                   String supplierId) {
+	                   String supplierId,
+	                   int quantity,
+	                   LocalDate expiryDate,
+	                   String warranty) {
 
 	        this.productId = productId;
-	        this.name = name;
+	        this.productName = productName;
 	        this.description = description;
-	        this.unitPrice = unitPrice;
+	        this.price = price;
 	        this.category = category;
 	        this.supplierId = supplierId;
+	        this.quantity = quantity;
+	        this.expiryDate = expiryDate;
+	        this.warranty = warranty;
 	    }
 
 	    public String getProductId() {
@@ -30,12 +45,12 @@ public class Product{
 	        this.productId = productId;
 	    }
 
-	    public String getName() {
-	        return name;
+	    public String getProductName() {
+	        return productName;
 	    }
 
-	    public void setName(String name) {
-	        this.name = name;
+	    public void setProductName(String productName) {
+	        this.productName = productName;
 	    }
 
 	    public String getDescription() {
@@ -46,12 +61,12 @@ public class Product{
 	        this.description = description;
 	    }
 
-	    public double getUnitPrice() {
-	        return unitPrice;
+	    public double getPrice() {
+	        return price;
 	    }
 
-	    public void setUnitPrice(double unitPrice) {
-	        this.unitPrice = unitPrice;
+	    public void setPrice(double price) {
+	        this.price = price;
 	    }
 
 	    public String getCategory() {
@@ -59,7 +74,6 @@ public class Product{
 	    }
 
 	    public void setCategory(String category) {
-	    	System.out.println("hi");
 	        this.category = category;
 	    }
 
@@ -69,6 +83,43 @@ public class Product{
 
 	    public void setSupplierId(String supplierId) {
 	        this.supplierId = supplierId;
-	        
 	    }
-}
+
+	    public int getQuantity() {
+	        return quantity;
+	    }
+
+	    public void setQuantity(int quantity) {
+	        this.quantity = quantity;
+	    }
+
+	    public LocalDate getExpiryDate() {
+	        return expiryDate;
+	    }
+
+	    public void setExpiryDate(LocalDate expiryDate) {
+	        this.expiryDate = expiryDate;
+	    }
+
+	    public String getWarranty() {
+	        return warranty;
+	    }
+
+	    public void setWarranty(String warranty) {
+	        this.warranty = warranty;
+	    }
+
+	    @Override
+	    public String toString() {
+
+	        return "Product ID : " + productId +
+	                "Product Name : " + productName +
+	                "Description : " + description +
+	                "Price : " + price +
+	                "Category : " + category +
+	                "Supplier ID : " + supplierId +
+	                "Quantity : " + quantity +
+	                "Expiry Date : " + expiryDate +
+	                "Warranty : " + warranty;
+	    }
+	}
