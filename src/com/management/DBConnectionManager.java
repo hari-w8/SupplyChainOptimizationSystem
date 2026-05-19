@@ -17,6 +17,7 @@ public class DBConnectionManager {
 
             FileInputStream file = new FileInputStream("src/database.properties");
             properties.load(file);
+            file.close();
 
             String url = properties.getProperty("db.url");
             String username = properties.getProperty("db.username");
@@ -29,7 +30,7 @@ public class DBConnectionManager {
 
             System.out.println("Database Connected Successfully!");
 
-        } catch (IOException e) {
+        }catch (IOException e) {
             System.out.println("database.properties file not found!");
             e.printStackTrace();
 
