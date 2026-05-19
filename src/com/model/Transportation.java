@@ -10,7 +10,7 @@ public class Transportation
 
 
 public Transportation(String shipmentId, String orderId, String carrierId, String status) {
-	//super();
+	
 	this.shipmentId = shipmentId;
 	this.orderId = orderId;
 	this.carrierId = carrierId;
