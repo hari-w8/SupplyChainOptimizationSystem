@@ -7,6 +7,7 @@ public class Warehouse{
 	private int capacity;
 	private int availableSpace;
 	private int currentStock;
+	private double storageUsage;
 	private String status;
 	
 	//getter
@@ -27,6 +28,9 @@ public class Warehouse{
 	}
 	public int getCurrentStock() {
 		return currentStock;
+	}
+	public double getStorageUsage() {
+		return storageUsage;
 	}
 	public String getStatus() {
 		return status;
@@ -51,18 +55,10 @@ public class Warehouse{
 	public void setCurrentStock(int currentStock) {
 		this.currentStock=currentStock;
 	}
+	public void setStorageUsage(double storageUsage) {
+		this.storageUsage=storageUsage;
+	}
 	public void setStatus(String status) {
 		this.status=status;
-	}
-	
-	//constructor
-	public Warehouse(String warehouseId,String name,String location,int capacity,int availableSpace,int currentStock,String status) {
-		this.warehouseId=warehouseId;
-		this.name=name;
-		this.location=location;
-		this.capacity=capacity;
-		this.availableSpace=availableSpace;
-		this.currentStock=currentStock;
-		this.status=status;
-	}	   
+	}   
 }
