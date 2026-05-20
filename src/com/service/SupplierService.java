@@ -1,146 +1,65 @@
 package com.service;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.exception.SupplyChainException;
-import com.management.SupplierManagement;
 import com.model.Supplier;
+import com.util.ApplicationUtil;
 
-public class SupplierService
-{
+public class SupplierService {
+	private ArrayList<Supplier> supplierList = new ArrayList<Supplier>();
+    private static int supplierCount = 1001;
 
-    SupplierManagement management =
-            new SupplierManagement();
-
-    // ADD SUPPLIER
-
-    public void addSupplier(
-            String name,
-            String contactPerson,
-            String email,
-            String phone)
-            throws SupplyChainException
-    {
-
-        // VALIDATION
-
-        if(name.isEmpty())
-        {
-            throw new SupplyChainException(
-                    "Company name cannot be empty");
-        }
-
-        if(contactPerson.isEmpty())
-        {
-            throw new SupplyChainException(
-                    "Contact person cannot be empty");
-        }
-
-        if(!email.contains("@"))
-        {
-            throw new SupplyChainException(
-                    "Invalid email");
-        }
-
-        if(phone.length() != 10)
-        {
-            throw new SupplyChainException(
-                    "Phone number must be 10 digits");
-        }
-
-        // GENERATE SUPPLIER ID
-
-        String firstPart =
-                name.substring(0,4).toUpperCase();
-
-        String lastPart =
-                phone.substring(6);
-
-        String supplierId =
-                firstPart + lastPart;
-
-        // CREATE OBJECT
-
-        Supplier supplier =
-                new Supplier(
-                        supplierId,
-                        name,
-                        contactPerson,
-                        email,
-                        phone
-                );
-
-        // INSERT INTO DATABASE
-
-        management.insertSupplier(
-                supplier);
-
-        System.out.println(
-                "Supplier Added Successfully");
-
-        System.out.println(
-                "Generated Supplier ID : "
-                        + supplierId);
+    public String generateSupplierId() {
+        return ApplicationUtil.generateSupplierId();
     }
 
-    // GET SUPPLIER BY ID
+    public void addSupplier(Supplier supplier) throws SupplyChainException {
 
-    public Supplier getSupplierById(
-            String supplierId)
-            throws SupplyChainException
-    {
-
-        Supplier supplier =
-                management.getSupplierById(
-                        supplierId);
-
-        if(supplier == null)
-        {
-            throw new SupplyChainException(
-                    "Supplier not found");
+        if (!ApplicationUtil.isValidEmail(supplier.getEmail())) {
+            throw new SupplyChainException("Invalid email format!");
         }
 
-        return supplier;
-    }
-
-    // VIEW ALL SUPPLIERS
-
-    public List<Supplier> getAllSuppliers()
-    		 throws SupplyChainException
-    {
-        return management.getAllSuppliers();
-    }
-
-    // DELETE SUPPLIER
-
-    public void deleteSupplier(
-            String supplierId)
-            throws SupplyChainException
-    {
-
-        Supplier supplier =
-                management.getSupplierById(
-                        supplierId);
-
-        if(supplier == null)
-        {
-            throw new SupplyChainException(
-                    "Supplier ID not found");
+        if (!ApplicationUtil.isValidPhone(supplier.getPhone())) {
+            throw new SupplyChainException("Phone number must contain exactly 10 digits!");
         }
 
-        management.deleteSupplier(
-                supplierId);
-
-        System.out.println(
-                "Supplier Deleted Successfully");
+        supplierList.add(supplier);
+        System.out.println("Supplier added successfully!");
     }
 
-    // SEARCH BY NAME
+    public void viewSuppliers() {
 
-    public List<Supplier> searchByName(
-            String name)
-            		 throws SupplyChainException
-    {
-        return management.searchByName(name);
-    } 
+        if (supplierList.isEmpty()) {
+            System.out.println("No suppliers available.");
+            return;
+        }
+
+        for (Supplier supplier : supplierList) {
+            System.out.println("--------------------------------");
+            supplier.displaySupplier();
+        }
+    }
+
+    public boolean supplierExists(String supplierId) {
+
+        for (Supplier supplier : supplierList) {
+            if (supplier.getSupplierId().equalsIgnoreCase(supplierId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Supplier getSupplierById(String supplierId) throws SupplyChainException {
+
+        for (Supplier supplier : supplierList) {
+            if (supplier.getSupplierId().equalsIgnoreCase(supplierId)) {
+                return supplier;
+            }
+        }
+
+        throw new SupplyChainException("Supplier not found!");
+    }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.client;
 
 import java.sql.Connection;
@@ -119,3 +120,5 @@ public class TestDB {
         }
     }
 }
+=======
+>>>>>>> branch 'master' of https://github.com/hari-w8/SupplyChainOptimizationSystem
