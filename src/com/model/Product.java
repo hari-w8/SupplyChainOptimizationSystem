@@ -1,5 +1,4 @@
 package com.model;
-import java.time.LocalDate;
 
 	public class Product {
 
@@ -10,7 +9,7 @@ import java.time.LocalDate;
 	    private String category;
 	    private String supplierId;
 	    private int quantity;
-	    private LocalDate expiryDate;
+	    private String expiryDate;
 	    private String warranty;
 
 	    public Product() {
@@ -23,7 +22,7 @@ import java.time.LocalDate;
 	                   String category,
 	                   String supplierId,
 	                   int quantity,
-	                   LocalDate expiryDate,
+	                   String expiryDate,
 	                   String warranty) {
 
 	        this.productId = productId;
@@ -93,11 +92,11 @@ import java.time.LocalDate;
 	        this.quantity = quantity;
 	    }
 
-	    public LocalDate getExpiryDate() {
+	    public String getExpiryDate() {
 	        return expiryDate;
 	    }
 
-	    public void setExpiryDate(LocalDate expiryDate) {
+	    public void setExpiryDate(String expiryDate) {
 	        this.expiryDate = expiryDate;
 	    }
 

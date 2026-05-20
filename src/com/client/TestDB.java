@@ -33,8 +33,12 @@ public class TestDB {
 
                 // ================= PRODUCT =================
                 System.out.println("\n========== PRODUCT DATA ==========");
+                PreparedStatement ps2 = connection.prepareStatement("ALTER TABLE Product quantity int");
+                ResultSet rs2 = ps2.executeQuery();
                 PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM Product");
                 ResultSet rs2 = ps2.executeQuery();
+                
+                
 
                 while (rs2.next()) {
                     System.out.println(
