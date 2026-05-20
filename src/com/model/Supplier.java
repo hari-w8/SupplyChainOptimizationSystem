@@ -55,4 +55,13 @@ package com.model;
 			this.phone = phone;
 
 		}
+		public void displaySupplier()
+		{
+		 System.out.println("Supplier ID     : " + supplierId);
+         System.out.println("Name            : " + name);
+         System.out.println("Contact Person  : " + contactPerson);
+         System.out.println("Email           : " + email);
+         System.out.println("Phone           : " + phone);
+    }
+		
 	}

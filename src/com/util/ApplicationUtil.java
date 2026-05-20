@@ -1,48 +1,59 @@
 package com.util;
 
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
-/**
- * ApplicationUtil provides shared utilities used across all modules.
- */
 public class ApplicationUtil {
 
-    // Counter for generating supplier IDs  (static so it persists per JVM session)
-    // In production you would query MAX(supplierId) from DB at startup.
-    private static int supplierCounter = 1001;
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-    // ─────────────────────────────────────────────
-    // Parse a CSV record string into a List of field values
-    // e.g. "SUP1001,TechParts,John,john@tp.com,9876543210"
-    // ─────────────────────────────────────────────
-    public static List<String> extractDetails(String csvRecord) {
-        String[] parts = csvRecord.split(",");
-        return Arrays.asList(parts);
+    public static String generateId(String name, int number) {
+
+        String prefix;
+
+        if (name.length() >= 3) {
+            prefix = name.substring(0, 3).toLowerCase();
+        } else {
+            prefix = name.toLowerCase();
+        }
+
+        return prefix + number;
     }
 
-    // ─────────────────────────────────────────────
-    // Generate unique Supplier ID  →  SUP1001, SUP1002 …
-    // ─────────────────────────────────────────────
-    public static String generateSupplierId() {
-        return "SUP" + (supplierCounter++);
+    public static LocalDateTime currentDateTime() {
+        return LocalDateTime.now();
     }
 
-    // ─────────────────────────────────────────────
-    // Validate email format  (basic regex)
-    // ─────────────────────────────────────────────
+    public static String formatDate(LocalDateTime dateTime) {
+        return dateTime.format(FORMATTER);
+    }
+
+    public static String readString(Scanner sc, String message) {
+        System.out.print(message);
+        return sc.nextLine();
+    }
+
+    public static int readInt(Scanner sc, String message) {
+        System.out.print(message);
+        int value = sc.nextInt();
+        sc.nextLine();
+        return value;
+    }
+
+    public static double readDouble(Scanner sc, String message) {
+        System.out.print(message);
+        double value = sc.nextDouble();
+        sc.nextLine();
+        return value;
+    }
+
     public static boolean isValidEmail(String email) {
-        if (email == null) return false;
-        String emailRegex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
-        return email.matches(emailRegex);
+        return email.contains("@") && email.contains(".");
     }
 
-    // ─────────────────────────────────────────────
-    // Validate phone: 10–15 digits (allows optional + prefix)
-    // ─────────────────────────────────────────────
     public static boolean isValidPhone(String phone) {
-        if (phone == null) return false;
-        String phoneRegex = "^\\+?[0-9]{10,15}$";
-        return phone.matches(phoneRegex);
+        return phone.matches("[0-9]{10}");
     }
 }
