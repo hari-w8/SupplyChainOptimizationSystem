@@ -1,18 +1,17 @@
 package com.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.exception.SupplyChainException;
-import com.management.SupplierManagement;
 import com.model.Supplier;
 
 public class SupplierService
 {
 
-    SupplierManagement management =
-            new SupplierManagement();
 
-    // ADD SUPPLIER
+    List<Supplier> supplierList = new ArrayList<>();
+
 
     public void addSupplier(
             String name,
@@ -22,7 +21,6 @@ public class SupplierService
             throws SupplyChainException
     {
 
-        // VALIDATION
 
         if(name.isEmpty())
         {
@@ -36,30 +34,31 @@ public class SupplierService
                     "Contact person cannot be empty");
         }
 
-        if(!email.contains("@"))
+        if(!email.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$"))
         {
             throw new SupplyChainException(
                     "Invalid email");
         }
 
-        if(phone.length() != 10)
+        if(!phone.matches("[0-9]{10}"))
         {
             throw new SupplyChainException(
-                    "Phone number must be 10 digits");
+                    "Phone number must contain 10 digits");
+        }
+        String firstPart ;
+        if(name.length()>=4)
+        {
+               firstPart= name.substring(0,4).toUpperCase();
+        }
+        else
+        {
+        	firstPart=name.toUpperCase();
         }
 
-        // GENERATE SUPPLIER ID
+        String lastPart =phone.substring(6);
 
-        String firstPart =
-                name.substring(0,4).toUpperCase();
+        String supplierId = firstPart + lastPart;
 
-        String lastPart =
-                phone.substring(6);
-
-        String supplierId =
-                firstPart + lastPart;
-
-        // CREATE OBJECT
 
         Supplier supplier =
                 new Supplier(
@@ -70,10 +69,8 @@ public class SupplierService
                         phone
                 );
 
-        // INSERT INTO DATABASE
 
-        management.insertSupplier(
-                supplier);
+        supplierList.add(supplier);
 
         System.out.println(
                 "Supplier Added Successfully");
@@ -83,35 +80,35 @@ public class SupplierService
                         + supplierId);
     }
 
-    // GET SUPPLIER BY ID
+
 
     public Supplier getSupplierById(
             String supplierId)
             throws SupplyChainException
     {
 
-        Supplier supplier =
-                management.getSupplierById(
-                        supplierId);
-
-        if(supplier == null)
+        for(Supplier supplier : supplierList)
         {
-            throw new SupplyChainException(
-                    "Supplier not found");
+
+            if(supplier.getSupplierId()
+                    .equals(supplierId))
+            {
+                return supplier;
+            }
         }
 
-        return supplier;
+        throw new SupplyChainException(
+                "Supplier not found");
     }
 
-    // VIEW ALL SUPPLIERS
+
 
     public List<Supplier> getAllSuppliers()
-    		 throws SupplyChainException
     {
-        return management.getAllSuppliers();
+        return supplierList;
     }
 
-    // DELETE SUPPLIER
+
 
     public void deleteSupplier(
             String supplierId)
@@ -119,28 +116,36 @@ public class SupplierService
     {
 
         Supplier supplier =
-                management.getSupplierById(
+                getSupplierById(
                         supplierId);
+        
 
-        if(supplier == null)
-        {
-            throw new SupplyChainException(
-                    "Supplier ID not found");
-        }
-
-        management.deleteSupplier(
-                supplierId);
+        supplierList.remove(supplier);
 
         System.out.println(
                 "Supplier Deleted Successfully");
     }
 
-    // SEARCH BY NAME
+
 
     public List<Supplier> searchByName(
             String name)
-            		 throws SupplyChainException
     {
-        return management.searchByName(name);
-    } 
+
+        List<Supplier> result =
+                new ArrayList<>();
+
+        for(Supplier supplier : supplierList)
+        {
+
+            if(supplier.getName()
+                    .toLowerCase()
+                    .contains(name.toLowerCase()))
+            {
+                result.add(supplier);
+            }
+        }
+
+        return result;
+    }
 }
