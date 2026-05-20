@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.management;
 
 import java.io.FileInputStream;
@@ -48,3 +49,5 @@ public class DBConnectionManager {
 }
 
 
+=======
+>>>>>>> branch 'master' of https://github.com/hari-w8/SupplyChainOptimizationSystem

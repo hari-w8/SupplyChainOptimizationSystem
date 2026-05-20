@@ -1,116 +1,102 @@
-//package com.management;
-//
-//import com.exception.SupplyChainException;
-//import com.model.Transportation;
-//
-//import java.sql.*;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-///**
-// * MANAGEMENT (DAO) CLASS: TransportationManagement
-// */
-//public class TransportationManagement {
-//
-//    public void insertShipment(Transportation transport) throws SupplyChainException {
-//        String sql = "INSERT INTO Transportation (shipmentId, orderId, carrierId, status) VALUES (?, ?, ?, ?)";
-//        try {
-//            Connection conn = DBConnectionManager.getConnection();
-//            PreparedStatement ps = conn.prepareStatement(sql);
-//            ps.setString(1, transport.getShipmentId());
-//            ps.setString(2, transport.getOrderId());
-//            ps.setString(3, transport.getCarrierId());
-//            ps.setString(4, transport.getStatus());
-//            ps.executeUpdate();
-//            System.out.println("[Transport] Shipment added: " + transport.getShipmentId());
-//        } catch (SQLIntegrityConstraintViolationException e) {
-//            throw new SupplyChainException("Order ID '" + transport.getOrderId() + "' does not exist.");
-//        } catch (Exception e) {
-//            throw new SupplyChainException("Failed to add shipment: " + e.getMessage(), e);
-//        }
-//    }
-//
-//    /**
-//     * Updates the shipment status.
-//     * Valid statuses: "Pending", "In Transit", "Delivered", "Returned"
-//     */
-//    public void updateShipmentStatus(String shipmentId, String newStatus) throws SupplyChainException {
-//        List<String> validStatuses = List.of("Pending", "In Transit", "Delivered", "Returned");
-//        if (!validStatuses.contains(newStatus)) {
-//            throw new SupplyChainException("Invalid status '" + newStatus + 
-//                "'. Use: Pending, In Transit, Delivered, Returned");
-//        }
-//
-//        Transportation existing = getShipmentById(shipmentId);
-//        if (existing == null) {
-//            throw new SupplyChainException("Shipment ID '" + shipmentId + "' not found.");
-//        }
-//
-//        // Prevent going backwards (e.g., Delivered → In Transit)
-//        if (existing.getStatus().equals("Delivered")) {
-//            throw new SupplyChainException("Cannot update status of an already-delivered shipment.");
-//        }
-//
-//        try {
-//            Connection conn = DBConnectionManager.getConnection();
-//            PreparedStatement ps = conn.prepareStatement(
-//                "UPDATE Transportation SET status = ? WHERE shipmentId = ?");
-//            ps.setString(1, newStatus);
-//            ps.setString(2, shipmentId);
-//            ps.executeUpdate();
-//            System.out.println("[Transport] Status updated: " + shipmentId + " → " + newStatus);
-//        } catch (Exception e) {
-//            throw new SupplyChainException("Failed to update shipment: " + e.getMessage(), e);
-//        }
-//    }
-//
-//    public Transportation getShipmentById(String shipmentId) throws SupplyChainException {
-//        try {
-//            Connection conn = DBConnectionManager.getConnection();
-//            PreparedStatement ps = conn.prepareStatement(
-//                "SELECT * FROM Transportation WHERE shipmentId = ?");
-//            ps.setString(1, shipmentId);
-//            ResultSet rs = ps.executeQuery();
-//            if (rs.next()) return mapRow(rs);
-//            return null;
-//        } catch (Exception e) {
-//            throw new SupplyChainException("Error fetching shipment: " + e.getMessage(), e);
-//        }
-//    }
-//
-//    public Transportation getShipmentByOrderId(String orderId) throws SupplyChainException {
-//        try {
-//            Connection conn = DBConnectionManager.getConnection();
-//            PreparedStatement ps = conn.prepareStatement(
-//                "SELECT * FROM Transportation WHERE orderId = ?");
-//            ps.setString(1, orderId);
-//            ResultSet rs = ps.executeQuery();
-//            if (rs.next()) return mapRow(rs);
-//            return null;
-//        } catch (Exception e) {
-//            throw new SupplyChainException("Error fetching shipment by order: " + e.getMessage(), e);
-//        }
-//    }
-//
-//    public List<Transportation> getAllShipments() throws SupplyChainException {
-//        List<Transportation> list = new ArrayList<>();
-//        try {
-//            Connection conn = DBConnectionManager.getConnection();
-//            ResultSet rs = conn.createStatement()
-//                .executeQuery("SELECT * FROM Transportation ORDER BY shipmentId");
-//            while (rs.next()) list.add(mapRow(rs));
-//        } catch (Exception e) {
-//            throw new SupplyChainException("Error fetching shipments: " + e.getMessage(), e);
-//        }
-//        return list;
-//    }
-//
-//    private Transportation mapRow(ResultSet rs) throws SQLException {
-//        return new Transportation(
-//            rs.getString("shipmentId"),
-//            rs.getString("orderId"),
-//            rs.getString("carrierId"),
-//            rs.getString("status")
-//        );
-//    }
-//}
+package com.model;
+
+public class Transportation
+{
+	private String shipmentId;
+	private String orderId;
+
+	private String carrierId;
+	private String status;
+	private String sourceLocation;
+	private String destinationLocation;
+	private String shipmentDate;
+	private String deliveryDate;
+	private double deliveryCharges;
+	
+
+public Transportation(String shipmentId, String orderId, String carrierId, String status, String sourceLocation,
+		String destinationLocation, String shipmentDate, String deliveryDate, double deliveryCharges) {
+	super();
+	this.shipmentId = shipmentId;
+	this.orderId = orderId;
+	this.carrierId = carrierId;
+	this.status = status;
+	this.sourceLocation = sourceLocation;
+	this.destinationLocation = destinationLocation;
+	this.shipmentDate = shipmentDate;
+	this.deliveryDate = deliveryDate;
+	this.deliveryCharges = deliveryCharges;
+}
+
+public String getShipmentId() {
+	return shipmentId;
+}
+
+public void setShipmentId(String shipmentId) {
+	this.shipmentId = shipmentId;
+}
+
+public String getOrderId() {
+	return orderId;
+}
+
+public void setOrderId(String orderId) {
+	this.orderId = orderId;
+}
+
+public String getCarrierId() {
+	return carrierId;
+}
+
+public void setCarrierId(String carrierId) {
+	this.carrierId = carrierId;
+}
+
+public String getStatus() {
+	return status;
+}
+
+public void setStatus(String status) {
+	this.status = status;
+}
+
+public String getSourceLocation() {
+	return sourceLocation;
+}
+
+public void setSourceLocation(String sourceLocation) {
+	this.sourceLocation = sourceLocation;
+}
+
+public String getDestinationLocation() {
+	return destinationLocation;
+}
+
+public void setDestinationLocation(String destinationLocation) {
+	this.destinationLocation = destinationLocation;
+}
+
+public String getShipmentDate() {
+	return shipmentDate;
+}
+
+public void setShipmentDate(String shipmentDate) {
+	this.shipmentDate = shipmentDate;
+}
+
+public String getDeliveryDate() {
+	return deliveryDate;
+}
+
+public void setDeliveryDate(String deliveryDate) {
+	this.deliveryDate = deliveryDate;
+}
+
+public double getDeliveryCharges() {
+	return deliveryCharges;
+}
+
+public void setDeliveryCharges(double deliveryCharges) {
+	this.deliveryCharges = deliveryCharges;
+}
+}
