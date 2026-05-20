@@ -12,59 +12,54 @@ import java.util.stream.Collectors;
 
 public class OrderService {
 
-    // Object creation for accessing order methods
-    OrderManagement orderManagement = new OrderManagement();
+    private final OrderManagement orderManagement;
+    private final InventoryManagement inventoryManagement;
 
-    // Object creation for inventory methods
-    InventoryManagement inventoryManagement = new InventoryManagement();
+    public OrderService(OrderManagement orderManagement,
+                        InventoryManagement inventoryManagement) {
+        this.orderManagement     = orderManagement;
+        this.inventoryManagement = inventoryManagement;
+    }
 
 
-  
-    // PLACE ORDER METHOD
-  
+    // ─────────────────────────────────────────────
+    // PLACE ORDER
+    // ─────────────────────────────────────────────
+
     public void placeOrder(String customerId,
                            String productId,
                            int quantity,
                            double unitPrice)
             throws SupplyChainException {
 
-        // Get inventory details using product id
-        Inventory inv =
-                inventoryManagement.getInventoryByProductId(productId);
+        validateCustomerId(customerId);
+        validateProductId(productId);
+        validateQuantity(quantity);
+        validateUnitPrice(unitPrice);
 
-        // If inventory not found
+        Inventory inv = inventoryManagement.getInventoryByProductId(productId);
+
         if (inv == null) {
             throw new SupplyChainException(
-                    "Product not available in inventory");
+                    "Product not available in inventory: " + productId);
         }
 
- 
-        // Check stock availability
         if (inv.getQuantityInStock() < quantity) {
-
             throw new SupplyChainException(
-                    "Insufficient stock");
+                    "Insufficient stock. Available: "
+                    + inv.getQuantityInStock() + ", Requested: " + quantity);
         }
 
-        // Get all existing orders
         List<String> existingOrderIds =
                 orderManagement.getAllOrders()
                         .stream()
                         .map(Order::getOrderId)
                         .collect(Collectors.toList());
 
-        // Generate new order id
-        String newOrderId =
-                ApplicationUtil.generateOrderId(existingOrderIds);
+        String newOrderId = ApplicationUtil.generateOrderId(existingOrderIds);
 
-
-
-        // Calculate total amount
         double totalAmount = quantity * unitPrice;
 
-
-        
-        // Create order object
         Order order = new Order(
                 newOrderId,
                 customerId,
@@ -73,53 +68,148 @@ public class OrderService {
                 OrderManagement.STATUS_NEW
         );
 
-
-     
-        // Insert order into database
         orderManagement.insertOrder(order);
 
+        int updatedStock = inv.getQuantityInStock() - quantity;
+        inventoryManagement.updateStock(productId, updatedStock);
 
-     
-        // Reduce stock after placing order
-        int updatedStock =
-                inv.getQuantityInStock() - quantity;
-
-        inventoryManagement.updateStock(
-                productId,
-                updatedStock
-        );
-
-        System.out.println("Order placed successfully");
+        System.out.println("Order placed successfully. Order ID: " + newOrderId);
     }
 
 
-
-   
+    // ─────────────────────────────────────────────
     // CANCEL ORDER
-   
+    // ─────────────────────────────────────────────
+
     public void cancelOrder(String orderId)
             throws SupplyChainException {
 
+        validateOrderId(orderId);
+
+        Order order = orderManagement.getOrderById(orderId);
+
+        if (order == null) {
+            throw new SupplyChainException("Order not found: " + orderId);
+        }
+
+        if (!OrderManagement.STATUS_NEW.equals(order.getStatus())
+                && !OrderManagement.STATUS_CONFIRMED.equals(order.getStatus())) {
+            throw new SupplyChainException(
+                    "Order cancellation not allowed. Current status: "
+                    + order.getStatus());
+        }
+
         orderManagement.cancelOrder(orderId);
+        System.out.println("Order cancelled successfully: " + orderId);
     }
 
 
-
-   
+    // ─────────────────────────────────────────────
     // GET ORDER BY ID
- 
+    // ─────────────────────────────────────────────
+
     public Order getOrderById(String orderId)
             throws SupplyChainException {
 
-        Order order =
-                orderManagement.getOrderById(orderId);
+        validateOrderId(orderId);
+
+        Order order = orderManagement.getOrderById(orderId);
 
         if (order == null) {
-
-            throw new SupplyChainException(
-                    "Order not found");
+            throw new SupplyChainException("Order not found: " + orderId);
         }
 
         return order;
     }
 
+
+    // ─────────────────────────────────────────────
+    // GET ALL ORDERS BY CUSTOMER
+    // ─────────────────────────────────────────────
+
+    public List<Order> getOrdersByCustomer(String customerId)
+            throws SupplyChainException {
+
+        validateCustomerId(customerId);
+
+        return orderManagement.getAllOrders()
+                .stream()
+                .filter(o -> o.getCustomerId().equalsIgnoreCase(customerId))
+                .collect(Collectors.toList());
+    }
+
+
+    // ─────────────────────────────────────────────
+    // UPDATE ORDER STATUS
+    // ─────────────────────────────────────────────
+
+    public void updateOrderStatus(String orderId, String newStatus)
+            throws SupplyChainException {
+
+        validateOrderId(orderId);
+
+        if (!OrderManagement.VALID_STATUSES.contains(newStatus)) {
+            throw new SupplyChainException("Invalid order status: " + newStatus);
+        }
+
+        Order order = orderManagement.getOrderById(orderId);
+
+        if (order == null) {
+            throw new SupplyChainException("Order not found: " + orderId);
+        }
+
+        if (OrderManagement.STATUS_CANCELLED.equals(order.getStatus())) {
+            throw new SupplyChainException("Cannot update a cancelled order.");
+        }
+
+        order.setStatus(newStatus);
+        orderManagement.updateOrder(order);
+        System.out.println("Order " + orderId + " status updated to: " + newStatus);
+    }
+
+
+    // ─────────────────────────────────────────────
+    // BUILD ORDER LIST FROM RAW INPUT
+    // ─────────────────────────────────────────────
+
+    public List<Order> buildOrderList(List<String> rawRecords)
+            throws SupplyChainException {
+
+        return ApplicationUtil.buildOrderList(rawRecords);
+    }
+
+
+    // ─────────────────────────────────────────────
+    // PRIVATE VALIDATION HELPERS
+    // ─────────────────────────────────────────────
+
+    private void validateOrderId(String orderId) throws SupplyChainException {
+        if (orderId == null || orderId.trim().isEmpty()) {
+            throw new SupplyChainException("Order ID must not be null or empty.");
+        }
+    }
+
+    private void validateCustomerId(String customerId) throws SupplyChainException {
+        if (customerId == null || customerId.trim().isEmpty()) {
+            throw new SupplyChainException("Customer ID must not be null or empty.");
+        }
+    }
+
+    private void validateProductId(String productId) throws SupplyChainException {
+        if (productId == null || productId.trim().isEmpty()) {
+            throw new SupplyChainException("Product ID must not be null or empty.");
+        }
+    }
+
+    private void validateQuantity(int quantity) throws SupplyChainException {
+        if (quantity <= 0) {
+            throw new SupplyChainException("Quantity must be greater than zero.");
+        }
+    }
+
+    private void validateUnitPrice(double unitPrice) throws SupplyChainException {
+        if (unitPrice <= 0) {
+            throw new SupplyChainException("Unit price must be greater than zero.");
+        }
+    }
+}
