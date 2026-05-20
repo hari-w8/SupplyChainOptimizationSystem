@@ -9,7 +9,16 @@ public class ApplicationUtil {
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-    public static String generateId(String prefix, int number) {
+    public static String generateId(String name, int number) {
+
+        String prefix;
+
+        if (name.length() >= 3) {
+            prefix = name.substring(0, 3).toLowerCase();
+        } else {
+            prefix = name.toLowerCase();
+        }
+
         return prefix + number;
     }
 
