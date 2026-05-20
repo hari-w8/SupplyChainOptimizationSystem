@@ -1,118 +1,76 @@
 package com.service;
 
-import com.model.Transportation;
-import java.util.*;
-public class TransportationService
-{
- List<Transportation> list =new ArrayList<Transportation>();
- 
- 
- public void addTransportation(Transportation t)
- {
-	 list.add(t);
-	 System.out.println("Shipment added succesfully");
-	 
-		 
- }
- 
- public void updateStatus(String newStatus,String shipmentId)
- {
-	 if(list.isEmpty())
-	 {
-		 System.out.println("No shipments are found");
-	 }
-	 else
-		
-     {
-	 for(Transportation t:list)
-	 {
-	 if(t.getShipmentId().equals(shipmentId))
-			 t.setStatus(newStatus);
-	 else
-		 System.out.println("No order has placed by this shippingId");
-	 }
-	 }
- }
- 
- public void viewAllShipments()
- {
-	 if(list.isEmpty())
-	 {
-		 System.out.println("No shipments are found");
-	 }
-	 
-	 for(Transportation t:list)
-	 {
-	  System.out.println(t);
-	 }
- }
- 
- public void viewShipmentsByOrderId(String OrderId)
- {
- 
- if(list.isEmpty())
- {
-	 System.out.println("No shipments are found");
- }
- else
- {
- for(Transportation t:list)
- {
- if(t.getOrderId().equals(OrderId))
-	System.out.println(t);
- else
-	 System.out.println("No order has placed by this OrderId");
- }
- }
- }
- 
- public Transportation searchById(String shipId)
- {
-	 if(list.isEmpty())
-	 {
-		 System.out.println("No shipments are found");
-	 }
-	 else
-	 {
-		 for(Transportation t: list)
-		 {
-			if( t. getShipmentId().equals(shipId))
-			{
-				return t;
-			}
-		 }
-	 }
-	 return null;
-	 
- }
- 
-public void deleteShipmentsById(String ShipmentId)
-{
-	if(list.isEmpty())
-	 {
-		 System.out.println("No shipments are found");
-	 }
-	else
-	{
-		Transportation t=searchById(ShipmentId);
-		if(t!=null)
-		{
-		list.remove(t);
-		System.out.println("Shipment is deleted successfully");
-		}
-		else
-		{
-			System.out.println("Shipment is not found");
-		}
-			
-		
-	}
-		
-}
+import java.util.ArrayList;
 
-public String generateId()
-{
-	int c=100;
-	return "TRANS"+(c++);
-}
+import com.exception.SupplyChainException;
+import com.model.Order;
+import com.model.Transportation;
+import com.util.ApplicationUtil;
+
+public class TransportationService {
+
+    private ArrayList<Transportation> transportationList = new ArrayList<Transportation>();
+    private static int shipmentCount = 7001;
+
+    public String generateShipmentId() {
+        return ApplicationUtil.generateId("T", shipmentCount++);
+    }
+
+    public void addShipment(Transportation transportation, OrderService orderService) throws SupplyChainException {
+
+        if (!orderService.orderExists(transportation.getOrderId())) {
+            throw new SupplyChainException("Invalid order ID. Place order first!");
+        }
+
+        if (!isValidStatus(transportation.getStatus())) {
+            throw new SupplyChainException("Shipment status must be Pending, In Transit, or Delivered!");
+        }
+
+        transportationList.add(transportation);
+        System.out.println("Shipment added successfully!");
+    }
+
+    public void viewShipments() {
+
+        if (transportationList.isEmpty()) {
+            System.out.println("No shipments available.");
+            return;
+        }
+
+        for (Transportation transportation : transportationList) {
+            System.out.println("--------------------------------");
+            transportation.displayTransportation();
+        }
+    }
+
+    public void updateShipmentStatus(String shipmentId, String status, OrderService orderService)
+            throws SupplyChainException {
+
+        if (!isValidStatus(status)) {
+            throw new SupplyChainException("Shipment status must be Pending, In Transit, or Delivered!");
+        }
+
+        for (Transportation transportation : transportationList) {
+            if (transportation.getShipmentId().equalsIgnoreCase(shipmentId)) {
+
+                transportation.setStatus(status);
+
+                if (status.equalsIgnoreCase("Delivered")) {
+                    Order order = orderService.getOrderById(transportation.getOrderId());
+                    order.setStatus("Delivered");
+                }
+
+                System.out.println("Shipment status updated successfully!");
+                return;
+            }
+        }
+
+        throw new SupplyChainException("Shipment not found!");
+    }
+
+    private boolean isValidStatus(String status) {
+        return status.equalsIgnoreCase("Pending")
+                || status.equalsIgnoreCase("In Transit")
+                || status.equalsIgnoreCase("Delivered");
+    }
 }

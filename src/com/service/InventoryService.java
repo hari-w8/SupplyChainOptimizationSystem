@@ -1,110 +1,87 @@
 package com.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import com.exception.SupplyChainException;
-import com.management.InventoryManagement;
 import com.model.Inventory;
-//import com.util.ApplicationUtil;
+import com.util.ApplicationUtil;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * SERVICE CLASS: InventoryService
- */
 public class InventoryService {
 
-    private final InventoryManagement inventoryManagement = new InventoryManagement();
+    private ArrayList<Inventory> inventoryList = new ArrayList<Inventory>();
+    private static int inventoryCount = 1001;
 
-    public void addInventory(String productId,
-                             int quantity)
-            throws SupplyChainException {
+    public String generateInventoryId() {
+        return ApplicationUtil.generateId("I", inventoryCount++);
+    }
 
-        // Check if inventory already exists
-        Inventory existing =
-                inventoryManagement
-                        .getInventoryByProductId(productId);
+    public void addInventory(Inventory inventory, ProductService productService) throws SupplyChainException {
 
-        if (existing != null) 
-        {
-
-            // Update Existing Stock
-            int newQty =
-                    existing.getQuantityInStock()
-                    + quantity;
-
-            inventoryManagement.updateStock(
-                    productId,
-                    newQty);
-
-            System.out.println(
-                    "Stock increased for "
-                    + productId
-                    + " -> "
-                    + newQty);
-
+        if (!productService.productExists(inventory.getProductId())) {
+            throw new SupplyChainException("Invalid product ID. Add product first!");
         }
 
-        else {
+        if (inventory.getQuantityInStock() < 0) {
+            throw new SupplyChainException("Quantity cannot be negative!");
+        }
 
-            // Generate Inventory ID
-            List<String> existingIds =
-                    inventoryManagement
-                            .getAllInventory()
-                            .stream()
-                            .map(Inventory::getInventoryId)
-                            .collect(Collectors.toList());
+        for (Inventory inv : inventoryList) {
+            if (inv.getProductId().equalsIgnoreCase(inventory.getProductId())) {
+                int newQty = inv.getQuantityInStock() + inventory.getQuantityInStock();
+                inv.setQuantityInStock(newQty);
+                inv.setLastUpdated(LocalDateTime.now());
 
-            String newId = ApplicationUtil.generateInventoryId(existingIds);
+                System.out.println("Inventory already exists. Stock updated successfully!");
+                return;
+            }
+        }
 
-            // Create New Inventory
-            Inventory inv = new Inventory(newId,productId,quantity,ApplicationUtil.getCurrentDateTime());
+        inventoryList.add(inventory);
+        System.out.println("Inventory added successfully!");
+    }
 
-            inventoryManagement.insertInventory(inv);
+    public void viewInventory() {
 
-            System.out.println(
-                    "New Inventory Added");
+        if (inventoryList.isEmpty()) {
+            System.out.println("No inventory available.");
+            return;
+        }
+
+        for (Inventory inventory : inventoryList) {
+            System.out.println("--------------------------------");
+            inventory.displayInventory();
         }
     }
 
-    public Inventory getInventoryByProductId(
-            String productId)
-            throws SupplyChainException {
+    public int getStockByProductId(String productId) throws SupplyChainException {
 
-        Inventory inv = inventoryManagement.getInventoryByProductId(productId);
-
-        if (inv == null) 
-        {
-
-            throw new SupplyChainException("No inventory record for product : "+ productId);
+        for (Inventory inventory : inventoryList) {
+            if (inventory.getProductId().equalsIgnoreCase(productId)) {
+                return inventory.getQuantityInStock();
+            }
         }
 
-        return inv;
+        throw new SupplyChainException("Inventory not found for this product!");
     }
 
-    public List<Inventory> getAllInventory()
-            throws SupplyChainException 
-    {
+    public void reduceStock(String productId, int quantity) throws SupplyChainException {
 
-        return inventoryManagement
-                .getAllInventory();
-    }
+        for (Inventory inventory : inventoryList) {
+            if (inventory.getProductId().equalsIgnoreCase(productId)) {
 
-    public List<Inventory> getLowStockItems()
-            throws SupplyChainException {
+                if (quantity > inventory.getQuantityInStock()) {
+                    throw new SupplyChainException("Insufficient stock!");
+                }
 
-        List<Inventory> lowStock =
-                inventoryManagement.getLowStockItems();
+                inventory.setQuantityInStock(inventory.getQuantityInStock() - quantity);
+                inventory.setLastUpdated(LocalDateTime.now());
 
-        if (lowStock.isEmpty()) {
-
-            System.out.println("No low-stock items found.");
+                System.out.println("Stock updated successfully!");
+                return;
+            }
         }
 
-        else 
-        {
-        System.out.println("LOW STOCK ALERT - "+ lowStock.size()+ " products need attention!");
-        }
-
-        return lowStock;
+        throw new SupplyChainException("Inventory not found for this product!");
     }
 }

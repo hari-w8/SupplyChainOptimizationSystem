@@ -1,43 +1,49 @@
 package com.model;
 
-/**
- * MODEL CLASS: Inventory
- * Tracks how much stock is available for each product.
- * Updated automatically whenever an order is placed or stock is restocked.
- */
+import java.time.LocalDateTime;
+
 public class Inventory {
 
     private String inventoryId;
-    private String productId;       // FK → Product.productId
-    private int    quantityInStock;
-    private String lastUpdated;     // Formatted: dd-MM-yyyy HH:mm:ss
+    private String productId;
+    private int quantityInStock;
+    private LocalDateTime lastUpdated;
 
-    public Inventory() {}
-
-    public Inventory(String inventoryId, String productId,
-                     int quantityInStock, String lastUpdated) {
-        this.inventoryId      = inventoryId;
-        this.productId        = productId;
-        this.quantityInStock  = quantityInStock;
-        this.lastUpdated      = lastUpdated;
+    public Inventory(String inventoryId, String productId, int quantityInStock, LocalDateTime lastUpdated) {
+        this.inventoryId = inventoryId;
+        this.productId = productId;
+        this.quantityInStock = quantityInStock;
+        this.lastUpdated = lastUpdated;
     }
 
-    // ── Getters & Setters ──────────────────────────────────────────────────────
-    public String getInventoryId()                       { return inventoryId; }
-    public void   setInventoryId(String inventoryId)     { this.inventoryId = inventoryId; }
+    public String getInventoryId() {
+        return inventoryId;
+    }
 
-    public String getProductId()                   { return productId; }
-    public void   setProductId(String productId)   { this.productId = productId; }
+    public String getProductId() {
+        return productId;
+    }
 
-    public int  getQuantityInStock()                       { return quantityInStock; }
-    public void setQuantityInStock(int quantityInStock)    { this.quantityInStock = quantityInStock; }
+    public int getQuantityInStock() {
+        return quantityInStock;
+    }
 
-    public String getLastUpdated()                     { return lastUpdated; }
-    public void   setLastUpdated(String lastUpdated)   { this.lastUpdated = lastUpdated; }
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
 
-    @Override
-    public String toString() {
-        return "Inventory [ID=" + inventoryId + ", ProductID=" + productId +
-               ", Stock=" + quantityInStock + ", LastUpdated=" + lastUpdated + "]";
+    public void setQuantityInStock(int quantityInStock) {
+        this.quantityInStock = quantityInStock;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public void displayInventory() {
+        System.out.println("Inventory ID      : " + inventoryId);
+        System.out.println("Product ID        : " + productId);
+        System.out.println("Quantity In Stock : " + quantityInStock);
+        System.out.println("Last Updated      : " + lastUpdated);
     }
 }
