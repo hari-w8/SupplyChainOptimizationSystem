@@ -1,4 +1,4 @@
-/*package com.service;
+package com.service;
 
 import com.exception.SupplyChainException;
 import com.management.WarehouseManagement;
@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class WarehouseService {
 
+	
     private final WarehouseManagement warehouseManagement =
             new WarehouseManagement();
 
@@ -379,4 +380,4 @@ public class WarehouseService {
 
         return warehouseList;
     }
-}*/
+}
