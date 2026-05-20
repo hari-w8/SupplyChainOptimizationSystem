@@ -13,7 +13,7 @@ import java.util.List;
 public class TransportationManagement {
 
     public void insertShipment(Transportation transport) throws SupplyChainException {
-        String sql = "INSERT INTO Transportation (shipmentId, orderId, carrierId, status,sourceLocation,destinationLocation,shipmentDate,deliveryDate,deliveryCharges) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transportation (shipmentId, orderId, carrierId, status,sourceLocation,destinationLocation,shipmentDate,deliveryDate,deliveryCharges) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             Connection conn = DBConnectionManager.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -110,7 +110,13 @@ public class TransportationManagement {
             rs.getString("shipmentId"),
             rs.getString("orderId"),
             rs.getString("carrierId"),
-            rs.getString("status")
+            rs.getString("status"),
+            rs.getString("sourceLocation"),
+            rs.getString("destinationLocation"),
+            rs.getString("shipmentDate"),
+            rs.getString("deliveryDate"),
+            rs.getDouble("deliveryCharges")
+            
         );
     }
 }
