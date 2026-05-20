@@ -10,8 +10,8 @@ public class SupplierService {
 	private ArrayList<Supplier> supplierList = new ArrayList<Supplier>();
     private static int supplierCount = 1001;
 
-    public String generateSupplierId() {
-        return ApplicationUtil.generateSupplierId();
+    public String generateId() {
+        return ApplicationUtil.generateId("S",supplierCount++);
     }
 
     public void addSupplier(Supplier supplier) throws SupplyChainException {
