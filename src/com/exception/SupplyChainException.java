@@ -1,6 +1,7 @@
 package com.exception;
 
 
+<<<<<<< HEAD
 /**
  * EXCEPTION CLASS: SupplyChainException
  *
@@ -13,6 +14,8 @@ package com.exception;
  *   throw new SupplyChainException("Insufficient stock for product: " + productId);
  *   throw new SupplyChainException("Order cannot be cancelled in status: " + status);
  */
+=======
+>>>>>>> branch 'master' of https://github.com/hari-w8/SupplyChainOptimizationSystem.git
 public class SupplyChainException extends Exception {
 
     // serialVersionUID is required for serializable classes (best practice for Exception subclasses)
