@@ -1,5 +1,9 @@
 package com.exception;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> branch 'master' of https://github.com/hari-w8/SupplyChainOptimizationSystem
 public class SupplyChainException extends Exception {
 
     
@@ -14,3 +18,4 @@ public class SupplyChainException extends Exception {
         super(message, cause);
     }
 }
+

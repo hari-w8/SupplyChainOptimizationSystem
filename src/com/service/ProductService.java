@@ -1,106 +1,185 @@
 package com.service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.exception.SupplyChainException;
-import com.management.*;
-import com.model.*;
+import com.model.Product;
 import com.util.ApplicationUtil;
-/**
- * SERVICE CLASS: ProductService
- *
- * The SERVICE layer sits between the UserInterface and Management (DAO) layer.
- * It handles BUSINESS LOGIC:
- *  - ID generation before calling the DAO
- *  - Parsing CSV strings to Product objects
- *  - Applying extra business rules
- *
- * Flow:  UserInterface → ProductService → ProductManagement (DAO) → Database
- */
+
 public class ProductService {
 
-    // Service classes hold a reference to the DAO
-    private final ProductManagement productManagement = new ProductManagement();
+    // Product Storage
+    private List<Product> productList = new ArrayList<>();
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //  ADD PRODUCT
-    // ═══════════════════════════════════════════════════════════════════════════
+    // =========================================
+    // ADD PRODUCT
+    // =========================================
 
-    /**
-     * Adds a new product.
-     * Generates a unique ID automatically before inserting.
-     */
-    public void addProduct(String name, String description, double unitPrice,
-                           String category, String supplierId) throws SupplyChainException {
+    public void addProduct(String productId,
+    		               String productName,
+                           String description,
+                           double price,
+                           String category,
+                           String supplierId,
+                           int quantity,
+                   	       String expiryDate,
+                   	       String warranty)
+            throws SupplyChainException {
 
-        // Get all existing product IDs so we can calculate the next one
-        List<String> existingIds = productManagement.getAllProducts()
-            .stream().map(Product::getProductId).collect(Collectors.toList());
+        // Validation
+        if(productName == null || productName.isEmpty()) {
+            throw new SupplyChainException(
+                    "Product name cannot be empty"
+            );
+        }
 
-        String newId = ApplicationUtil.generateProductId(existingIds);
+        if(price <= 0) {
+            throw new SupplyChainException(
+                    "Invalid Product Price"
+            );
+        }
 
-        // Create the appropriate subclass based on category
+        // Existing IDs
+        List<String> existingIds = productList
+                .stream()
+                .map(Product::getProductId)
+                .collect(Collectors.toList());
+
+        // Auto Generate Product ID
+        String newId =
+                ApplicationUtil.generateProductId(
+                        existingIds
+                );
+
         Product product;
-        if ("ConsumerGoods".equalsIgnoreCase(category)) {
-            product = new Product.ConsumerGoods(newId, name, description, unitPrice, supplierId, "General");
-        } else if ("IndustrialGoods".equalsIgnoreCase(category)) {
-            product = new Product.IndustrialGoods(newId, name, description, unitPrice, supplierId, "General");
-        } else {
-            throw new SupplyChainException("Invalid category. Use 'ConsumerGoods' or 'IndustrialGoods'.");
+
+        // Category Wise Object Creation
+        if("ConsumerGoods"
+                .equalsIgnoreCase(category)) {
+
+            product = new Product(
+            		productId,
+            	    productName,
+            	    description,
+            	    price,
+            	    category,
+            	    supplierId,
+            	    quantity,
+            	    expiryDate,
+            	    warranty
+            );
+
+        }
+        else if("IndustrialGoods"
+                .equalsIgnoreCase(category)) {
+
+            product = new Product(
+            		productId,
+            	    productName,
+            	    description,
+            	    price,
+            	    category,
+            	    supplierId,
+            	    quantity,
+            	    expiryDate,
+            	    warranty
+            );
+        }
+        else {
+
+            throw new SupplyChainException(
+                    "Invalid Category"
+            );
         }
 
-        productManagement.insertProduct(product);
-        System.out.println("Product added successfully with ID: " + newId);
+        // Add Product
+        productList.add(product);
+
+        System.out.println(
+                "Product Added Successfully : "
+                        + newId
+        );
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //  DELETE PRODUCT
-    // ═══════════════════════════════════════════════════════════════════════════
+    // =========================================
+    // DELETE PRODUCT
+    // =========================================
 
-    public void deleteProduct(String productId) throws SupplyChainException {
-        productManagement.deleteProduct(productId);
-        System.out.println("Product deleted: " + productId);
+    public void deleteProduct(String productId)
+            throws SupplyChainException {
+
+        Product product =
+                getProductById(productId);
+
+        productList.remove(product);
+
+        System.out.println(
+                "Product Deleted : "
+                        + productId
+        );
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //  RETRIEVE
-    // ═══════════════════════════════════════════════════════════════════════════
+    // =========================================
+    // GET PRODUCT BY ID
+    // =========================================
 
-    public Product getProductById(String productId) throws SupplyChainException {
-        Product p = productManagement.getProductById(productId);
-        if (p == null) throw new SupplyChainException("Product not found: " + productId);
-        return p;
-    }
+    public Product getProductById(
+            String productId)
+            throws SupplyChainException {
 
-    public List<Product> getAllProducts() throws SupplyChainException {
-        return productManagement.getAllProducts();
-    }
+        for(Product p : productList) {
 
-    public List<Product> getProductsByCategory(String category) throws SupplyChainException {
-        return productManagement.getProductsByCategory(category);
-    }
+            if(p.getProductId()
+                    .equalsIgnoreCase(productId)) {
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    //  BUILD FROM CSV (bulk loading)
-    //  CSV format: "name,description,unitPrice,category,supplierId"
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    public void addProductFromCSV(String csvLine) throws SupplyChainException {
-        List<String> fields = ApplicationUtil.parseCSV(csvLine);
-        if (fields.size() < 5) {
-            throw new SupplyChainException("Invalid CSV. Expected: name,description,price,category,supplierId");
+                return p;
+            }
         }
 
-        String name        = fields.get(0);
-        String description = fields.get(1);
-        double unitPrice;
-        try {
-            unitPrice = Double.parseDouble(fields.get(2));
-        } catch (NumberFormatException e) {
-            throw new SupplyChainException("Invalid price value: " + fields.get(2));
-        }
-        String category   = fields.get(3);
-        String supplierId = fields.get(4);
+        throw new SupplyChainException(
+                "Product Not Found : "
+                        + productId
+        );
+    }
 
-        addProduct(name, description, unitPrice, category, supplierId);
+    // =========================================
+    // GET ALL PRODUCTS
+    // =========================================
+
+    public List<Product> getAllProducts() {
+
+        return productList;
+    }
+
+    // =========================================
+    // GET PRODUCTS BY CATEGORY
+    // =========================================
+
+    public List<Product> getProductsByCategory(
+            String category)
+            throws SupplyChainException {
+
+        List<Product> filteredProducts =
+                new ArrayList<>();
+
+        for(Product p : productList) {
+
+            if(p.getCategory()
+                    .equalsIgnoreCase(category)) {
+
+                filteredProducts.add(p);
+            }
+        }
+
+        if(filteredProducts.isEmpty()) {
+
+            throw new SupplyChainException(
+                    "No Products Found In Category : "
+                            + category
+            );
+        }
+
+        return filteredProducts;
     }
 }
